@@ -7,9 +7,11 @@
 
 <br><br>
 
-# MDB-Automat
+# AutomatIQ
 
-**Passives Telemetrie-Dashboard für Sielaff-SUe2020-Verkaufsautomaten**
+**Der smarte Betriebsagent für Verkaufsautomaten**
+
+Dekodiert Verkäufe, überwacht Umsatz & Technik, meldet per Telegram — passiv am MDB-Bus.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-000000.svg)](LICENSE)
 &nbsp;[![Python 3](https://img.shields.io/badge/Python-3-000000.svg?logo=python&logoColor=white)](https://www.python.org/)
