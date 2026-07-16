@@ -62,7 +62,7 @@ RAW_LOG_BACKUP_COUNT = 2           # => max ~60 MB rollierendes Roh-Fenster
 
 # --- Sielaff SUe2020 spezifisch ---
 AUTOMAT_NAME = "Sielaff SUe2020"
-AUTOMAT_STANDORT = "Darmstadt"
+AUTOMAT_STANDORT = "Mein Standort"
 
 # --- CEO Agent ---
 AGENT_ENABLED = True
@@ -84,7 +84,7 @@ TELEGRAM_ENABLED = True
 
 # --- Wetter (OpenWeatherMap) ---
 WEATHER_API_KEY = "DEIN_OPENWEATHERMAP_KEY"
-WEATHER_CITY = "Darmstadt"             # Stadt fuer Wetterdaten
+WEATHER_CITY = "Meine Stadt"             # Stadt fuer Wetterdaten
 WEATHER_ENABLED = True
 WEATHER_FETCH_INTERVAL = 7200         # Alle 2 Stunden neue Daten holen (Sekunden)
 
