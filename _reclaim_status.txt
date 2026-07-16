@@ -1,5 +1,0 @@
-START 21:47:03
-sniffer_kompr_fertig 21:55:00
-logs_archive/mdb_raw_20260716.log.zst: 10683658206 bytes 
-logs_archive/mdb_sniffer_20260716.log.zst : Decoding error (36) : Data corruption detected 
-ARCHIV_VERIFY_FEHLGESCHLAGEN_KEIN_TRUNCATE

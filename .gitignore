@@ -25,3 +25,7 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
+
+# Wartungs-Cruft & DB-Backups
+_reclaim*
+backups/
