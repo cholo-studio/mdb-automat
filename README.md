@@ -1,11 +1,31 @@
-# MDB-Automat — Dashboard für Sielaff SUe2020
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/cholo-studio-logo-white.png">
+  <img src="assets/cholo-studio-logo.png" alt="CHOLO STUDIO" width="300">
+</picture>
+
+<br><br>
+
+# MDB-Automat
+
+**Passives Telemetrie-Dashboard für Sielaff-SUe2020-Verkaufsautomaten**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-000000.svg)](LICENSE)
+&nbsp;[![Python 3](https://img.shields.io/badge/Python-3-000000.svg?logo=python&logoColor=white)](https://www.python.org/)
+&nbsp;[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-4%20%2F%205-000000.svg?logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/)
+&nbsp;[![by CHOLO STUDIO](https://img.shields.io/badge/by-CHOLO%20STUDIO-000000.svg)](https://github.com/cholo-studio)
+
+</div>
+
+---
 
 Liest **passiv** den MDB-Bus eines Sielaff-SUe2020-Verkaufsautomaten mit (über das
 [Qibixx MDB Pi Hat Plus](https://www.qibixx.com/)), dekodiert Verkäufe/Münzen/Scheine/Fehler
 und zeigt Umsatz- und Betriebs-Kennzahlen in einem **login-geschützten Web-Dashboard**.
 Läuft auf einem Raspberry Pi und meldet Anomalien direkt per **Telegram**.
 
-> Passiv heißt: der Automat wird nur mitgelesen, nicht gesteuert — kein Eingriff in den Verkaufsbetrieb.
+> **Passiv** heißt: der Automat wird nur mitgelesen, nicht gesteuert — kein Eingriff in den Verkaufsbetrieb.
 
 ## Features
 
@@ -72,6 +92,27 @@ Beim ersten Start werden `secret.key` und ein zufälliges Dashboard-Passwort
 Aktiver Eigenbetrieb an einem realen Automaten. Die Zahlungsart-Aufschlüsselung
 (Münze/Schein/Cashless) ist Work-in-Progress — Verkäufe & Umsatz werden zuverlässig erfasst.
 
+---
+
+## Von CHOLO STUDIO
+
+**CHOLO STUDIO** baut pragmatische Software für Gastronomie und Kleinbetrieb —
+von Automaten-Telemetrie über digitale Speisekarten bis zur Buchhaltung.
+Dieses Projekt ist Teil dieses Ökosystems: eigene Werkzeuge für echte Betriebe,
+sauber gebaut und offen geteilt.
+
+→ **[github.com/cholo-studio](https://github.com/cholo-studio)**
+
 ## Lizenz
 
-MIT — siehe [LICENSE](LICENSE). © CHOLO STUDIO
+[MIT](LICENSE) — frei nutz-, änder- und teilbar. © 2026 CHOLO STUDIO
+
+<div align="center">
+<br>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/cholo-studio-logo-white.png">
+  <img src="assets/cholo-studio-logo.png" alt="CHOLO STUDIO" width="150">
+</picture>
+<br><br>
+<sub>Gebaut von <a href="https://github.com/cholo-studio"><b>CHOLO STUDIO</b></a></sub>
+</div>
