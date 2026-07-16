@@ -1,0 +1,27 @@
+# Laufzeit-Daten — NIE versionieren
+*.log
+mdb_data.db
+mdb_data.db-wal
+mdb_data.db-shm
+mdb_backup*.db
+
+# Secrets — NIE committen (Klartext-Geheimnisse)
+config.py
+secret.key
+dashboard_password.txt
+ingest.key
+*.env
+.env
+
+# Backups & Archive (lokal)
+_backup_*/
+logs_archive/
+
+# Werbe-Uploads
+ads/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/

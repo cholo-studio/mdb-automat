@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System-Uebersicht - {{ automat_name }}</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #232736;
+            --border: #2d3148;
+            --text: #e4e6f0;
+            --text-dim: #8b8fa3;
+            --accent: #6c8aff;
+            --green: #4ade80;
+            --red: #f87171;
+            --yellow: #fbbf24;
+            --orange: #fb923c;
+            --cyan: #22d3ee;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header .meta { font-size: 12px; color: var(--text-dim); }
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 14px;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover { background: var(--accent); color: #fff; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+        /* Section */
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-header h2 { font-size: 15px; font-weight: 600; }
+        .section-header .badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: rgba(108,138,255,0.15);
+            color: var(--accent);
+        }
+        .section-body { padding: 20px; }
+
+        /* Architecture diagram */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 800px) { .arch-grid { grid-template-columns: 1fr; } }
+
+        .arch-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .arch-box .icon { font-size: 28px; margin-bottom: 8px; }
+        .arch-box .title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .arch-box .desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+        .arch-box.highlight { border-color: var(--accent); box-shadow: 0 0 20px rgba(108,138,255,0.1); }
+
+        .arch-flow {
+            text-align: center;
+            padding: 16px;
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        /* API table */
+        .api-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .api-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+        .api-table td {
+            padding: 8px 14px;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .api-table tr:hover { background: var(--surface2); }
+
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 48px;
+            text-align: center;
+        }
+        .method-get { background: rgba(74,222,128,0.15); color: var(--green); }
+        .method-post { background: rgba(108,138,255,0.15); color: var(--accent); }
+        .method-put { background: rgba(251,191,36,0.15); color: var(--yellow); }
+        .method-delete { background: rgba(248,113,113,0.15); color: var(--red); }
+
+        .route { color: var(--cyan); }
+        .param { color: var(--orange); font-size: 11px; }
+
+        /* Category header in table */
+        .cat-row td {
+            background: var(--surface2);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            padding: 12px 14px;
+        }
+
+        /* File table */
+        .file-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .file-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .file-table td {
+            padding: 8px 14px;
+            border-top: 1px solid var(--border);
+        }
+        .file-table tr:hover { background: var(--surface2); }
+        .filename { color: var(--cyan); font-weight: 600; }
+
+        /* Status grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .status-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .status-item .label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .status-item .val { font-size: 16px; font-weight: 700; margin-top: 4px; }
+        .status-item .val.ok { color: var(--green); }
+        .status-item .val.off { color: var(--text-dim); }
+        .status-item .val.warn { color: var(--yellow); }
+
+        /* Config table */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 800px) { .config-grid { grid-template-columns: 1fr; } }
+        .config-item {
+            background: var(--surface2);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .config-item .key { font-size: 11px; color: var(--text-dim); }
+        .config-item .val { font-size: 12px; font-weight: 600; }
+
+        /* Try button */
+        .try-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .try-btn:hover { background: var(--accent); color: #fff; }
+
+        /* Response preview */
+        .response-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 11px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: none;
+        }
+        .response-preview.visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🔧 System-Uebersicht</h1>
+            <div class="meta">{{ automat_name }} — {{ standort }}</div>
+        </div>
+        <a href="/" class="back-link">← Dashboard</a>
+    </div>
+
+    <div class="container">
+
+        <!-- Live Status -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📡 Live-Status</h2>
+                <span class="badge" id="statusBadge">Lade...</span>
+            </div>
+            <div class="section-body">
+                <div class="status-grid" id="statusGrid">
+                    <div class="status-item"><div class="label">MDB-Verbindung</div><div class="val" id="stConn">...</div></div>
+                    <div class="status-item"><div class="label">Laufzeit</div><div class="val" id="stUptime">...</div></div>
+                    <div class="status-item"><div class="label">Nachrichten gesamt</div><div class="val" id="stMsgs">...</div></div>
+                    <div class="status-item"><div class="label">Verkaeufe heute</div><div class="val" id="stVends">...</div></div>
+                    <div class="status-item"><div class="label">CEO-Agent</div><div class="val" id="stAgent">...</div></div>
+                    <div class="status-item"><div class="label">Telegram</div><div class="val" id="stTelegram">...</div></div>
+                    <div class="status-item"><div class="label">Wetter</div><div class="val" id="stWeather">...</div></div>
+                    <div class="status-item"><div class="label">LLM (Ollama)</div><div class="val" id="stLLM">...</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architektur -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🏗️ Architektur</h2>
+                <span class="badge">7 Komponenten</span>
+            </div>
+            <div class="section-body">
+                <div class="arch-flow">SIELAFF SUe2020 ──MDB-Bus──▶ QIBIXX PI HAT PLUS ──UART──▶ RASPBERRY PI 5</div>
+                <div class="arch-grid">
+                    <div class="arch-box highlight">
+                        <div class="icon">📡</div>
+                        <div class="title">MDB Sniffer</div>
+                        <div class="desc">Liest MDB-Bus ueber Qibixx Pi Hat Plus (UART /dev/ttyAMA0, 115200 Baud). Dekodiert alle MDB-Befehle passiv.</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="icon">🧠</div>
+                        <div class="title">CEO Agent</div>
+                        <div class="desc">Hybrid-Agent: Regelengine + LLM (Mistral). Prueft alle 5 Min auf Anomalien, erstellt Tages-/Wochenberichte.</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="icon">📊</div>
+                        <div class="title">Sales Analytics</div>
+                        <div class="desc">Berechnet Peak Hours, Produktgeschwindigkeit und Preisempfehlungen aus SQLite-Daten.</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="icon">🌤️</div>
+                        <div class="title">Weather Manager</div>
+                        <div class="desc">Holt alle 2h Wetterdaten von OpenWeatherMap und korreliert mit Verkaeufen.</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="icon">📱</div>
+                        <div class="title">Telegram Bot</div>
+                        <div class="desc">Sendet Alerts + Berichte. Empfaengt Befehle: /status /report /stock /sales /peak /weather</div>
+                    </div>
+                    <div class="arch-box">
+                        <div class="icon">🔗</div>
+                        <div class="title">n8n Webhook</div>
+                        <div class="desc">Sendet Events an n8n fuer weitere Automatisierung (E-Mail, Slack, etc.).</div>
+                    </div>
+                    <div class="arch-box highlight">
+                        <div class="icon">🖥️</div>
+                        <div class="title">Flask Dashboard</div>
+                        <div class="desc">Web-UI auf Port 5000. REST-API + Live-Dashboard. Zugriff ueber Tailscale.</div>
+                    </div>
+                </div>
+                <div class="arch-flow">DATENFLUSS: MDB-Bus → Parser → SQLite → Analytics/Agent → Dashboard/Telegram/n8n</div>
+            </div>
+        </div>
+
+        <!-- Dateien -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📁 Dateien</h2>
+                <span class="badge">/opt/mdb-dashboard/</span>
+            </div>
+            <div class="section-body" style="padding:0;">
+                <table class="file-table">
+                    <thead><tr><th>Datei</th><th>Funktion</th><th>Zeilen</th></tr></thead>
+                    <tbody>
+                        <tr><td class="filename">config.py</td><td>Zentrale Konfiguration (Ports, Schwellwerte, Keys)</td><td>~87</td></tr>
+                        <tr><td class="filename">mdb_protocol.py</td><td>MDB-Protokoll-Parser (Qibixx Sniffer-Format)</td><td>~400</td></tr>
+                        <tr><td class="filename">mdb_sniffer.py</td><td>Sniffer-Thread + SQLite + Event-Callbacks</td><td>~500</td></tr>
+                        <tr><td class="filename">agent.py</td><td>CEO-Agent (Observe → Think → Act Loop)</td><td>~300</td></tr>
+                        <tr><td class="filename">rules.py</td><td>Regelengine (Schwellwerte, Anomalie-Erkennung)</td><td>~200</td></tr>
+                        <tr><td class="filename">llm.py</td><td>Ollama/Mistral LLM-Client + Analysen</td><td>~200</td></tr>
+                        <tr><td class="filename">analytics.py</td><td>Sales Analytics (Peak Hours, Velocity, Preise)</td><td>~200</td></tr>
+                        <tr><td class="filename">weather_manager.py</td><td>OpenWeatherMap-Integration + Korrelation</td><td>~200</td></tr>
+                        <tr><td class="filename">reporter.py</td><td>Tages-/Wochenberichte mit LLM-Analyse</td><td>~200</td></tr>
+                        <tr><td class="filename">notifier.py</td><td>n8n Webhook + Telegram Sender</td><td>~350</td></tr>
+                        <tr><td class="filename">telegram_bot.py</td><td>Telegram Bot-Befehle (Polling + Kommandos)</td><td>~280</td></tr>
+                        <tr><td class="filename">web_server.py</td><td>Flask REST-API + Dashboard-Routing</td><td>~570</td></tr>
+                        <tr><td class="filename">setup.sh</td><td>One-Click Pi-Setup (UART, systemd, Tailscale)</td><td>~100</td></tr>
+                        <tr><td class="filename">templates/index.html</td><td>Dashboard-UI (Dark Theme, Charts, Filter)</td><td>~700</td></tr>
+                        <tr><td class="filename">templates/system.html</td><td>Diese Seite (System-Uebersicht)</td><td>—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API Routen -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🔌 API-Routen</h2>
+                <span class="badge" id="routeCount">37 Endpunkte</span>
+            </div>
+            <div class="section-body" style="padding:0;">
+                <table class="api-table">
+                    <thead><tr><th>Methode</th><th>Route</th><th>Beschreibung</th><th>Parameter</th><th></th></tr></thead>
+                    <tbody>
+                        <!-- Seiten -->
+                        <tr class="cat-row"><td colspan="5">📄 Seiten</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/</td>
+                            <td>Hauptseite — Dashboard</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/system</td>
+                            <td>Diese System-Uebersicht</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Statistiken -->
+                        <tr class="cat-row"><td colspan="5">📊 Statistiken</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/stats</td>
+                            <td>Aktuelle Live-Statistiken (Nachrichten, Verkaeufe, Uptime)</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/stats')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/messages</td>
+                            <td>Letzte MDB-Nachrichten vom Bus</td>
+                            <td><span class="param">?limit=50</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/messages?limit=5')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/vends</td>
+                            <td>Letzte erfolgreiche Verkaeufe</td>
+                            <td><span class="param">?limit=20</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/vends?limit=5')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/daily</td>
+                            <td>Tagesstatistiken (Umsatz, Verkaeufe pro Tag)</td>
+                            <td><span class="param">?days=30</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/daily?days=7')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/daily/range</td>
+                            <td>Tagesstatistiken nach Datumsbereich/Monat</td>
+                            <td><span class="param">?month=2026-03</span> oder <span class="param">?from=...&amp;to=...</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/daily/range?month=2026-03')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products</td>
+                            <td>Produkt-Statistiken mit Namen und Umsatz</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/products')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/health</td>
+                            <td>Health-Check (Status, Uptime, Verbindung)</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/health')">Testen</button></td>
+                        </tr>
+
+                        <!-- Produkt-Verwaltung -->
+                        <tr class="cat-row"><td colspan="5">🏷️ Produkt-Verwaltung</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products/mappings</td>
+                            <td>Alle aktiven Slot → Produkt Zuordnungen</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/products/mappings')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products/mappings/all</td>
+                            <td>Alle Zuordnungen (inkl. historische)</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/products/mappings/all')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/products/mappings</td>
+                            <td>Neues Produkt einem Slot zuordnen</td>
+                            <td><span class="param">JSON: {slot_id, product_name, price_cents?, category?}</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-put">PUT</span></td>
+                            <td class="route">/api/products/mappings/&lt;slot_id&gt;</td>
+                            <td>Aktives Mapping bearbeiten (ohne neue Historie)</td>
+                            <td><span class="param">JSON: {product_name?, price_cents?, category?}</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-delete">DEL</span></td>
+                            <td class="route">/api/products/mappings/&lt;slot_id&gt;</td>
+                            <td>Zuordnung eines Slots entfernen</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products/mappings/history/&lt;slot_id&gt;</td>
+                            <td>Zuordnungs-Historie eines Slots</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/products/mappings/bulk</td>
+                            <td>Mehrere Zuordnungen auf einmal importieren</td>
+                            <td><span class="param">JSON: [{slot_id, product_name}, ...]</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products/catalog</td>
+                            <td>Alle jemals verwendeten Produkte</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/products/catalog')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/products/unmapped</td>
+                            <td>Slots mit Verkaeufen aber ohne Produktzuordnung</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/products/unmapped')">Testen</button></td>
+                        </tr>
+
+                        <!-- Fuellstand -->
+                        <tr class="cat-row"><td colspan="5">📦 Fuellstand</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/stock</td>
+                            <td>Alle aktuellen Fuellstaende</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/stock')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-put">PUT</span></td>
+                            <td class="route">/api/stock/&lt;slot_id&gt;</td>
+                            <td>Fuellstand setzen</td>
+                            <td><span class="param">JSON: {count, max_capacity?}</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/stock/&lt;slot_id&gt;/refill</td>
+                            <td>Slot auffuellen</td>
+                            <td><span class="param">JSON: {count}</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-delete">DEL</span></td>
+                            <td class="route">/api/stock/&lt;slot_id&gt;</td>
+                            <td>Slot aus Fuellstand-Tracking entfernen</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Analytics -->
+                        <tr class="cat-row"><td colspan="5">📈 Analytics</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/analytics/peak-hours</td>
+                            <td>Verkaeufe pro Stunde (Peak-Hours Analyse)</td>
+                            <td><span class="param">?days=30 &amp;slot_id= &amp;group_by=product</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/analytics/peak-hours?days=30')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/analytics/velocity</td>
+                            <td>Verkaufsgeschwindigkeit pro Produkt</td>
+                            <td><span class="param">?days=14</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/analytics/velocity?days=14')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/analytics/price-recommendations</td>
+                            <td>Preisempfehlungen basierend auf Absatz</td>
+                            <td><span class="param">?days=14</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/analytics/price-recommendations?days=14')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/analytics/monthly-summary</td>
+                            <td>Monats-Aggregation (Umsatz, Top-Produkt)</td>
+                            <td><span class="param">?month=2026-03</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/analytics/monthly-summary')">Testen</button></td>
+                        </tr>
+
+                        <!-- Agent -->
+                        <tr class="cat-row"><td colspan="5">🧠 CEO Agent</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/agent/status</td>
+                            <td>Agent-Status (aktiv, LLM, Notifier, Checks)</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/agent/status')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/agent/alerts</td>
+                            <td>Letzte Agent-Alerts und Warnungen</td>
+                            <td><span class="param">?limit=50</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/agent/alerts?limit=5')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/agent/report/daily</td>
+                            <td>Manuell Tagesbericht ausloesen</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/agent/report/weekly</td>
+                            <td>Manuell Wochenbericht ausloesen</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-post">POST</span></td>
+                            <td class="route">/api/test/telegram</td>
+                            <td>Test-Nachricht an Telegram senden</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Wetter -->
+                        <tr class="cat-row"><td colspan="5">🌤️ Wetter</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/weather/today</td>
+                            <td>Heutiges Wetter (Temperatur, Feuchtigkeit, Regen)</td>
+                            <td></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/weather/today')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/weather/correlation</td>
+                            <td>Wetter + Verkaeufe korreliert pro Tag</td>
+                            <td><span class="param">?days=30</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/weather/correlation?days=30')">Testen</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/weather/summary</td>
+                            <td>Durchschnittl. Verkaeufe pro Wetterlage</td>
+                            <td><span class="param">?days=90</span></td>
+                            <td><button class="try-btn" onclick="tryApi('/api/weather/summary?days=90')">Testen</button></td>
+                        </tr>
+
+                        <!-- Export -->
+                        <tr class="cat-row"><td colspan="5">💾 Export</td></tr>
+                        <tr>
+                            <td><span class="method method-get">GET</span></td>
+                            <td class="route">/api/export/csv</td>
+                            <td>CSV-Export (Semikolon-getrennt fuer Excel)</td>
+                            <td><span class="param">?type=daily|vends &amp;month= &amp;from=&amp;to=</span></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Konfiguration -->
+        <div class="section">
+            <div class="section-header">
+                <h2>⚙️ Konfiguration</h2>
+                <span class="badge">config.py</span>
+            </div>
+            <div class="section-body">
+                <div class="config-grid" id="configGrid">
+                    <!-- wird per JS gefuellt -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Datenbank -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🗄️ Datenbank (SQLite)</h2>
+                <span class="badge">mdb_data.db</span>
+            </div>
+            <div class="section-body" style="padding:0;">
+                <table class="file-table">
+                    <thead><tr><th>Tabelle</th><th>Inhalt</th><th>Wichtige Felder</th></tr></thead>
+                    <tbody>
+                        <tr><td class="filename">mdb_messages</td><td>Alle MDB-Bus-Nachrichten</td><td>timestamp, direction, device, command, raw_hex</td></tr>
+                        <tr><td class="filename">vend_events</td><td>Erfolgreiche Verkaeufe</td><td>timestamp, product_id, price_cents, payment_method, success</td></tr>
+                        <tr><td class="filename">daily_stats</td><td>Tages-Aggregation</td><td>date, total_sales, total_revenue_cents, errors</td></tr>
+                        <tr><td class="filename">product_mappings</td><td>Slot → Produkt Zuordnungen</td><td>slot_id, product_name, price_cents, category, active_until</td></tr>
+                        <tr><td class="filename">stock_levels</td><td>Fuellstaende pro Slot</td><td>slot_id, current_count, max_capacity, last_updated</td></tr>
+                        <tr><td class="filename">weather_data</td><td>Wetterdaten pro Tag</td><td>date, temp_min/max/avg, condition, humidity, rain_mm</td></tr>
+                        <tr><td class="filename">agent_alerts</td><td>Agent-Warnungen</td><td>timestamp, severity, type, title, message</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API Response Preview -->
+        <div class="response-preview" id="responsePreview"></div>
+
+    </div>
+
+    <script>
+    // --- API Tester ---
+    async function tryApi(url) {
+        const preview = document.getElementById('responsePreview');
+        preview.className = 'response-preview visible';
+        preview.textContent = 'Lade ' + url + ' ...';
+        preview.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            preview.textContent = url + '\n\nStatus: ' + res.status + '\n\n' + JSON.stringify(data, null, 2);
+        } catch (e) {
+            preview.textContent = url + '\n\nFehler: ' + e.message;
+        }
+    }
+
+    // --- Live Status laden ---
+    async function loadStatus() {
+        try {
+            // Stats
+            const stats = await (await fetch('/api/stats')).json();
+            document.getElementById('stConn').textContent = stats.connection_status || '?';
+            document.getElementById('stConn').className = 'val ' + (stats.connection_status === 'connected' ? 'ok' : 'warn');
+            document.getElementById('stUptime').textContent = stats.uptime_str || '?';
+            document.getElementById('stUptime').className = 'val ok';
+            document.getElementById('stMsgs').textContent = (stats.total_messages || 0).toLocaleString('de');
+            document.getElementById('stMsgs').className = 'val ok';
+            document.getElementById('stVends').textContent = stats.today_sales || 0;
+            document.getElementById('stVends').className = 'val ok';
+
+            document.getElementById('statusBadge').textContent = stats.connection_status === 'connected' ? '● Online' : '○ Demo';
+        } catch (e) {
+            document.getElementById('statusBadge').textContent = '● Offline';
+        }
+
+        try {
+            // Agent
+            const agent = await (await fetch('/api/agent/status')).json();
+            document.getElementById('stAgent').textContent = agent.running ? 'Aktiv' : 'Inaktiv';
+            document.getElementById('stAgent').className = 'val ' + (agent.running ? 'ok' : 'off');
+
+            const tg = agent.telegram || {};
+            document.getElementById('stTelegram').textContent = tg.enabled ? ('Aktiv (' + (tg.sent || 0) + ' gesendet)') : 'Deaktiviert';
+            document.getElementById('stTelegram').className = 'val ' + (tg.enabled ? 'ok' : 'off');
+
+            document.getElementById('stLLM').textContent = agent.llm_available ? 'Verbunden' : 'Nicht erreichbar';
+            document.getElementById('stLLM').className = 'val ' + (agent.llm_available ? 'ok' : 'off');
+        } catch (e) {}
+
+        try {
+            // Wetter
+            const weather = await (await fetch('/api/weather/today')).json();
+            if (weather.enabled && weather.temp_avg !== undefined) {
+                document.getElementById('stWeather').textContent = weather.condition_emoji + ' ' + weather.temp_avg + '°C, ' + weather.city;
+                document.getElementById('stWeather').className = 'val ok';
+            } else if (weather.enabled) {
+                document.getElementById('stWeather').textContent = 'Aktiviert (wartet auf Daten)';
+                document.getElementById('stWeather').className = 'val warn';
+            } else {
+                document.getElementById('stWeather').textContent = 'Deaktiviert';
+                document.getElementById('stWeather').className = 'val off';
+            }
+        } catch (e) {}
+
+        // Config
+        loadConfig();
+    }
+
+    function loadConfig() {
+        const grid = document.getElementById('configGrid');
+        const items = [
+            ['Automat', '{{ automat_name }}'],
+            ['Standort', '{{ standort }}'],
+            ['MDB-Port', '/dev/ttyAMA0'],
+            ['Baudrate', '115200'],
+            ['Web-Port', '5000'],
+            ['Agent-Intervall', '5 Min'],
+            ['Telegram', '{{ "Aktiv" }}'],
+            ['Wetter-Stadt', '{{ standort }}'],
+            ['Wetter-Intervall', '2 Stunden'],
+            ['LLM-Modell', 'Mistral (Ollama)'],
+            ['DB-Datei', 'mdb_data.db'],
+            ['CSV-Trennzeichen', 'Semikolon (;)'],
+        ];
+        grid.innerHTML = items.map(function(item) {
+            return '<div class="config-item"><span class="key">' + item[0] + '</span><span class="val">' + item[1] + '</span></div>';
+        }).join('');
+    }
+
+    // Init
+    loadStatus();
+    setInterval(loadStatus, 30000);
+    </script>
+</body>
+</html>
